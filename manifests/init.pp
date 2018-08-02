@@ -175,7 +175,7 @@ class rhsm (
 
   if $repo_tools {
     exec { 'RHSM-REPO-TOOLS':
-      command   => "subscription-manager repos --enable=rhel-'${::operatingsystemmajrelease}'-server-satellite-tools-'${satellite_version}'-rpms",
+      command   => "subscription-manager repos --enable=rhel-${::operatingsystemmajrelease}-server-satellite-tools-${satellite_version}-rpms",
       onlyif    => 'yum repolist disabled | grep server-satellite-tools',
       path      => '/bin:/usr/bin:/usr/sbin',
       logoutput => true,
@@ -186,7 +186,7 @@ class rhsm (
   if $repo_els {
     exec { 'RHSM-REPO-ELS':
       command => "subscription-manager repos --enable=rhel-${::operatingsystemmajrelease}-server-els-rpms",
-      onlyif  => ' yum repolist disabled | grep server-els-rpms',
+      onlyif  => 'yum repolist disabled | grep server-els-rpms',
       path    => '/bin:/usr/bin:/usr/sbin',
       require => Exec['RHSM-register'],
     }
@@ -195,7 +195,7 @@ class rhsm (
   if $repo_els_tools {
     exec { 'RHSM-ELS-TOOLS':
       command => "subscription-manager repos --enable=rhel-${::operatingsystemmajrelease}-server-els-satellite-tools-${satellite_version}-rpms",
-      onlyif  => ' yum repolist disabled | grep server-els-satellite-tools',
+      onlyif  => 'yum repolist disabled | grep server-els-satellite-tools',
       path    => '/bin:/usr/bin:/usr/sbin',
       require => Exec['RHSM-register'],
     }
