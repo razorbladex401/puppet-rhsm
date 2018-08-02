@@ -174,19 +174,29 @@ class rhsm (
   }
 
   if $repo_tools {
-    ::rhsm::repo { "rhel-${::operatingsystemmajrelease}-server-satellite-tools-${satellite_version}-rpms":
-      require => Exec['RHSM-register'],
+    exec { 'RHSM-REPO-TOOLS':
+      command   => "subscription-manager repos --enable=rhel-${::operatingsystemmajrelease}-server-satellite-tools-${satellite_version}-rpms",
+      onlyif    => 'subscription-manager repos --list-disabled | grep "rhel-${::operatingsystemmajrelease}-server-satellite-tools-${satellite_version}-rpms"',
+      path      => '/bin:/usr/bin:/usr/sbin',
+      logoutput => true,
+      require   => Exec['RHSM-register'],
     }
   }
 
   if $repo_els {
-    ::rhsm::repo { "rhel-${::operatingsystemmajrelease}-server-els-rpms":
+    exec { 'RHSM-REPO-ELS':
+      command => "subscription-manager repos --enable=rhel-${::operatingsystemmajrelease}-server-els-rpms",
+      onlyif  => 'subscription-manager repos --list-disabled | grep "rhel-${::operatingsystemmajrelease}-server-els-rpms"',
+      path    => '/bin:/usr/bin:/usr/sbin',
       require => Exec['RHSM-register'],
     }
   }
 
   if $repo_els_tools {
-    ::rhsm::repo { "rhel-${::operatingsystemmajrelease}-server-els-satellite-tools-${satellite_version}-rpms":
+    exec { 'RHSM-ELS-TOOLS':
+      command => "subscription-manager repos --enable=rhel-${::operatingsystemmajrelease}-server-els-satellite-tools-${satellite_version}-rpms",
+      onlyif  => 'subscription-manager repos --list-disabled | grep "rhel-${::operatingsystemmajrelease}-server-els-satellite-tools-${satellite_version}-rpms"',
+      path    => '/bin:/usr/bin:/usr/sbin',
       require => Exec['RHSM-register'],
     }
   }
