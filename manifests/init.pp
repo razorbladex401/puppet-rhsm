@@ -72,8 +72,12 @@ class rhsm (
   $manage_repos          = 1,
   $full_refresh_on_yum   = 0,
   $package_ensure        = 'latest',
+  $repo_els              = false,
+  $repo_els_tools        = false,
   $repo_extras           = false,
-  $repo_optional         = false
+  $repo_optional         = false,
+  $repo_tools            = false,
+  $satellite_version     = 6.3
 ) {
 
   if ($rh_user == undef and $rh_password == undef) and ($org == undef and $activationkey == undef) {
@@ -165,6 +169,24 @@ class rhsm (
 
   if $repo_optional {
     ::rhsm::repo { "rhel-${::operatingsystemmajrelease}-server-optional-rpms":
+      require => Exec['RHSM-register'],
+    }
+  }
+
+  if $repo_tools {
+    ::rhsm::repo { "rhel-${::operatingsystemmajrelease}-server-satellite-tools-${satellite_version}-rpms":
+      require => Exec['RHSM-register'],
+    }
+  }
+
+  if $repo_els {
+    ::rhsm::repo { "rhel-${::operatingsystemmajrelease}-server-els-rpms":
+      require => Exec['RHSM-register'],
+    }
+  }
+
+  if $repo_els_tools {
+    ::rhsm::repo { "rhel-${::operatingsystemmajrelease}-server-els-satellite-tools-${satellite_version}-rpms":
       require => Exec['RHSM-register'],
     }
   }
