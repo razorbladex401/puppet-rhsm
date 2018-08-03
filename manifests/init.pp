@@ -72,6 +72,7 @@ class rhsm (
   $manage_repos          = 1,
   $full_refresh_on_yum   = 0,
   $package_ensure        = 'present',
+  $rhel_release          = undef,
   $repo_els              = false,
   $repo_els_tools        = false,
   $repo_extras           = false,
@@ -118,6 +119,12 @@ class rhsm (
     $proxycli = ''
   }
 
+  if $rhel_release {
+    $rhel_release_opt = " --release=${rhel_release}"
+  }else {
+    $rhel_release_opt = ''
+  }
+
   if $pool == undef {
     $command = "subscription-manager attach --auto${proxycli}"
   }
@@ -146,7 +153,7 @@ class rhsm (
   }
 
   exec { 'RHSM-register':
-    command   => "subscription-manager register --name='${::fqdn}'${_user}${_password}${_org}${_activationkey}${proxycli}",
+    command   => "subscription-manager register --name='${::fqdn}'${_user}${_password}${_org}${_activationkey}${rhel_release_opt}${proxycli}",
     onlyif    => 'subscription-manager identity 2>&1 | grep "not yet registered"',
     path      => '/bin:/usr/bin:/usr/sbin',
     logoutput => true,
