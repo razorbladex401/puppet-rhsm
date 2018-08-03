@@ -120,8 +120,6 @@ class rhsm (
 
   if $pool == undef {
     $command = "subscription-manager attach --auto${proxycli}"
-  } else {
-    $command = "subscription-manager attach --pool=${pool}${proxycli}"
   }
 
   package { 'subscription-manager':
@@ -148,17 +146,29 @@ class rhsm (
   }
 
   exec { 'RHSM-register':
-    command => "subscription-manager register --name='${::fqdn}'${_user}${_password}${_org}${_activationkey}${proxycli}",
-    onlyif  => 'subscription-manager identity 2>&1 | grep "not yet registered"',
-    path    => '/bin:/usr/bin:/usr/sbin',
-    require => Package['subscription-manager'],
+    command   => "subscription-manager register --name='${::fqdn}'${_user}${_password}${_org}${_activationkey}${proxycli}",
+    onlyif    => 'subscription-manager identity 2>&1 | grep "not yet registered"',
+    path      => '/bin:/usr/bin:/usr/sbin',
+    logoutput => true,
+    require   => Package['subscription-manager'],
   }
 
   exec { 'RHSM-subscribe':
-    command => $command,
-    onlyif  => 'subscription-manager list 2>&1 | grep "Expired\|Not Subscribed\|Unknown"',
-    path    => '/bin:/usr/bin:/usr/sbin',
-    require => Exec['RHSM-register'],
+    command   => $command,
+    onlyif    => 'subscription-manager list 2>&1 | grep "Expired\|Not Subscribed\|Unknown"',
+    path      => '/bin:/usr/bin:/usr/sbin',
+    logoutput => true,
+    require   => Exec['RHSM-register'],
+  }
+
+  if $pool {
+    exec { 'RHSM-attach-pool':
+      command   => "subscription-manager attach --pool=${pool}${proxycli}",
+      unless    => "subscription-manager list --consumed | grep ${pool}",
+      path      => '/bin:/usr/bin:/usr/sbin',
+      logoutput => true,
+      require   => Exec['RHSM-register'],
+    }
   }
 
   if $repo_extras {
