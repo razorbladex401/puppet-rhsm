@@ -71,7 +71,7 @@ class rhsm (
   $repo_ca_cert_source   = undef,
   $manage_repos          = 1,
   $full_refresh_on_yum   = 0,
-  $package_ensure        = 'latest',
+  $package_ensure        = 'present',
   $repo_els              = false,
   $repo_els_tools        = false,
   $repo_extras           = false,
