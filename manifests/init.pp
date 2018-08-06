@@ -37,7 +37,6 @@
 # @param proxy_user [String] Proxy user
 # @param proxy_password [String] Proxy password
 # @param baseurl [String] Base URL for rhsm, default provided
-# @param package_ensure [String] Whether to install subscription-manager
 # @param repo_extras [Boolean] Enable extras repository
 # @param repo_optional [Boolean] Enable optional repository
 #
@@ -71,7 +70,6 @@ class rhsm (
   $repo_ca_cert_source   = undef,
   $manage_repos          = 1,
   $full_refresh_on_yum   = 0,
-  $package_ensure        = 'present',
   $rhel_release          = undef,
   $repo_els              = false,
   $repo_els_tools        = false,
@@ -127,10 +125,6 @@ class rhsm (
 
   if $pool == undef {
     $command = "subscription-manager attach --auto${proxycli}"
-  }
-
-  package { 'subscription-manager':
-    ensure => $package_ensure,
   }
 
   exec {'sm yum clean all':
