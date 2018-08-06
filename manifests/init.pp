@@ -212,4 +212,14 @@ class rhsm (
     }
   }
 
+  if $rhel_release {
+    exec { 'RHSM-RHEL-RELEASE':
+      command => "subscription-manager release --set=${rhel_release}",
+      unless  => "subscription-manager release --show | grep ${rhel_release}",
+      path    => '/bin:/usr/bin:/usr/sbin',
+      require => Exec['RHSM-register'],
+    }
+
+  }
+
 }
